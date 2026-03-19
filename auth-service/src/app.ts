@@ -6,7 +6,7 @@ const app = express();
 app.use(express.json());
 
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', service: 'api gateway' });
+  res.json({ status: 'ok', service: 'Authenication Service' });
 });
 
 export default app;
