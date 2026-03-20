@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 
 export const authMiddleware = (req:Request,res:Response,next:NextFunction)=>{
     const authHeader = req.headers.authorization
-    if(!authHeader || authHeader.startsWith("bearer")){
+    if(!authHeader || authHeader.startsWith("Bearer")){
         res.status(401).json({message:"unAuthorized"})
     }
 
