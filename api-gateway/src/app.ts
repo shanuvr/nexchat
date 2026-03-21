@@ -30,7 +30,7 @@ app.use(
   }),
 );
 app.use(
-  "/api/chat",
+  "/api/chats",
   authMiddleware,
   createProxyMiddleware({
     target: `http://localhost:3003`,
