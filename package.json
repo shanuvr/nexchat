@@ -1,0 +1,25 @@
+{
+  "name": "nexchat",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "concurrently -n \"gateway,auth,user,chat,message,socket\" -c \"blue,green,yellow,magenta,cyan,red\" \"cd api-gateway && npm run dev\" \"cd auth-service && npm run dev\" \"cd user-service && npm run dev\" \"cd chat-service && npm run dev\" \"cd message-service && npm run dev\" \"cd socket-service && npm run dev\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shanuvr/nexchat.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/shanuvr/nexchat/issues"
+  },
+  "homepage": "https://github.com/shanuvr/nexchat#readme",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
