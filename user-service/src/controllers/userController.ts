@@ -4,6 +4,7 @@ import logger from "../utils/logger";
 import cloudinary from "../config/cloudinary";
 import { upload } from "../config/multer";
 import { Readable } from "stream";
+import redis from "../config/redis";
 export const getMyProfile = async (
   req: Request,
   res: Response,
@@ -106,6 +107,45 @@ export const searchUsers = async (req: Request, res: Response, next: NextFunctio
 
   } catch (error) {
     logger.error(`error in search users: ${error}`);
+    next(error);
+  }
+};
+
+export const getUserStatus = async(req: Request, res: Response, next: NextFunction)=>{
+  try {
+    const {userId} = req.params
+    const status = await redis.get(`user:online${userId}`)
+    res.status(200).json({userId, isOnline:status==='1'})
+
+    
+  } catch (error) {
+    logger.error(`catch in get userstatus worked ${error}`)
+    next(error)
+    
+  }
+
+}
+
+export const getBulkStatus = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { userIds } = req.body;
+
+    if (!userIds || !Array.isArray(userIds)) {
+      return res.status(400).json({ message: 'userIds array is required' });
+    }
+
+    const keys = userIds.map((id: string) => `user:online:${id}`);
+    const statuses = await redis.mget(...keys);
+
+    const result: Record<string, boolean> = {};
+    userIds.forEach((id: string, index: number) => {
+      result[id] = statuses[index] === '1';
+    });
+
+    res.status(200).json({ statuses: result });
+
+  } catch (error) {
+    logger.error(`error in bulk status: ${error}`);
     next(error);
   }
 };
