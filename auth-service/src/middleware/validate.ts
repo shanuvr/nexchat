@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express"
 import {z, ZodSchema} from 'zod'
 export const registerSchema = z.object({
+    name: z.string().min(1),
     email:z.string().email('invalid email format'),
     password:z.string().min(6,"password must be atleast 6 characters")
 })

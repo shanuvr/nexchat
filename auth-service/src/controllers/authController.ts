@@ -2,10 +2,13 @@ import { Request, Response, NextFunction } from "express";
 import bcrypt from "bcrypt";
 import userModel from "../models/User";
 import { generateTokens, verifyRefreshToken } from "../utils/jwt";
+import { publishEvent } from "../utils/rabbitmq";
 export const register = async (req: Request, res: Response) => {
   try {
     const { name, email, password } = req.body;
+
     const hashpass = await bcrypt.hash(password, 10);
+
     const existingUser = await userModel.findOne({ email });
     if (existingUser) {
       res.status(409).json({ message: "Email already exists" });
@@ -16,16 +19,22 @@ export const register = async (req: Request, res: Response) => {
       email,
       password: hashpass,
     });
+
     const { accessToken, refreshToken } = generateTokens(user._id.toString());
+
     await userModel.findByIdAndUpdate(user._id, { refreshToken });
-    res
-      .status(201)
-      .json({
-        message: "user registerd successfully",
-        accessToken,
-        refreshToken,
-        user: user,
-      });
+
+    await publishEvent("user.registered", {
+      userId: user._id.toString(),
+      email: user.email,
+    });
+
+    res.status(201).json({
+      message: "user registerd successfully",
+      accessToken,
+      refreshToken,
+      user: user,
+    });
   } catch (error) {
     console.log("error in register", error);
     res.status(500).json({ message: "internal server error ", error: error });
@@ -41,14 +50,12 @@ export const login = async (req: Request, res: Response) => {
     if (!pass) return res.status(401).json({ message: "invalid password" });
     const { accessToken, refreshToken } = generateTokens(user._id.toString());
     await userModel.findByIdAndUpdate(user._id, { refreshToken });
-    res
-      .status(200)
-      .json({
-        message: "logged in sccuess fully",
-        accessToken,
-        refreshToken,
-        sucess: true,
-      });
+    res.status(200).json({
+      message: "logged in sccuess fully...",
+      accessToken,
+      refreshToken,
+      sucess: true,
+    });
   } catch (error) {
     console.log("error in login", error);
     res.status(500).json({ message: "Internal server error" });
@@ -80,15 +87,13 @@ export const refresh = async (req: Request, res: Response) => {
   }
 };
 
-export const logout = async(req:Request,res:Response)=>{
+export const logout = async (req: Request, res: Response) => {
   try {
-    const userId = req.headers['x-user-id'] as string
-    await userModel.findByIdAndUpdate(userId,{refreshToken:null})
-    res.status(200).json({message:"logged out sccuess fully"})
-    
+    const userId = req.headers["x-user-id"] as string;
+    await userModel.findByIdAndUpdate(userId, { refreshToken: null });
+    res.status(200).json({ message: "logged out sccuess fully" });
   } catch (error) {
     console.log("error in logout", error);
     res.status(500).json({ message: "Internal server error" });
-    
   }
-}
+};

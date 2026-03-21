@@ -1,9 +1,9 @@
 import "dotenv/config";
 import express from "express";
 import { createProxyMiddleware } from "http-proxy-middleware";
-import { authLimiter, generalRateLimiter } from "./middleware.ts/rateLimiter";
+import { authLimiter,generalRateLimiter } from "./middleware/rateLimiter";
 import morgan from "morgan";
-import { authMiddleware } from "./middleware.ts/auth";
+import { authMiddleware } from "./middleware/auth";
 
 const app = express();
 
