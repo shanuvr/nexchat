@@ -38,7 +38,7 @@ app.use(
   }),
 );
 app.use(
-  "/api/message",
+  "/api/messages",
   authMiddleware,
   createProxyMiddleware({
     target: `http://localhost:3004`,
