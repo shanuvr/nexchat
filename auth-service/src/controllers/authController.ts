@@ -51,7 +51,7 @@ export const login = async (req: Request, res: Response) => {
     const { accessToken, refreshToken } = generateTokens(user._id.toString());
     await userModel.findByIdAndUpdate(user._id, { refreshToken });
     res.status(200).json({
-      message: "logged in sccuess fully",
+      message: "logged in sccuess fully...",
       accessToken,
       refreshToken,
       sucess: true,

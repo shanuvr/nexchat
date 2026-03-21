@@ -21,6 +21,10 @@ const ProfileSchema = new mongoose.Schema<ProfileI>(
       type: String,
       default: "",
     },
+     bio: {
+      type: String,
+      required: false,
+    },
     lastSeen: {
       type: Date,
       default: Date.now(),
