@@ -1,9 +1,11 @@
 import express from 'express'
-import { getMyProfile, searchUsers, updateAvatar, updateProfile } from '../controllers/userController'
+import { getBulkStatus, getMyProfile, getUserStatus, searchUsers, updateAvatar, updateProfile } from '../controllers/userController'
 import { upload } from '../config/multer'
 const userRouter = express.Router()
 userRouter.get('/profile',getMyProfile)
 userRouter.put("/profile",updateProfile)
 userRouter.put('/profile/avatar',upload.single("avatar"),updateAvatar)
 userRouter.get('/seaarch',searchUsers)
+userRouter.get('/status/:userId',getUserStatus)
+userRouter.get('/status/bulk',getBulkStatus)
 export default userRouter
