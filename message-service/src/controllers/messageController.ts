@@ -23,6 +23,7 @@ export const sendMessage = async (
       chatId,
       senderId,
       message,
+      receiverId:req.body.receiverId
     });
 
     res.status(201).json({ message: "Message sent", data: message });
