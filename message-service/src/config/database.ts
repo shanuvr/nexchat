@@ -6,9 +6,9 @@ export const connectDb = async () => {
     const uri = process.env.MONGO_URI;
     if (!uri) throw new Error("mongo uri not defined");
     await mongoose.connect(uri);
-    logger.info("database connected in Auth Service succesfully");
+    logger.info("Database connected in Message Service successfully");
   } catch (error) {
-    logger.error("erro connection databse", error);
+    logger.error("Error connecting to database in Message Service:", error);
     process.exit(1);
   }
 };

@@ -2,8 +2,10 @@ import mongoose from "mongoose";
 interface UserI {
   name: string;
   email: string;
-  password: string;
+  password?: string | null;   
   refreshToken?: string;
+  googleId?: string;         
+  avatar?: string;            
 }
 
 const userSchema = new mongoose.Schema<UserI>(
@@ -19,7 +21,7 @@ const userSchema = new mongoose.Schema<UserI>(
     },
     password: {
       type: String,
-      required: true,
+      required: false,
     },
     refreshToken: {
       type: String,

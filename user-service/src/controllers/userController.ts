@@ -30,10 +30,10 @@ export const updateProfile = async (
 ) => {
   try {
     const userId = req.headers["x-user-id"] as string;
-    const { username, bio } = req.body;
+    const { userName, bio } = req.body;
     const profile = await profileModel.findOneAndUpdate(
       { userId },
-      { username, bio },
+      { userName, bio },
       { new: true },
     );
     if (!profile) {
@@ -92,18 +92,23 @@ export const updateAvatar = async (req: Request, res: Response, next: NextFuncti
 export const searchUsers = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.headers['x-user-id'] as string;
-    const { q } = req.query;
+    const q = req.query.q as string;
 
     if (!q) {
       return res.status(400).json({ message: 'Search query is required' });
     }
 
     const users = await profileModel.find({
-      username: { $regex: q, $options: 'i' }, 
+      userName: { $regex: q, $options: 'i' }, 
       userId: { $ne: userId } 
     }).limit(20);
 
-    res.status(200).json({ users });
+    const usersWithStatus = await Promise.all(users.map(async (u: any) => {
+      const status = await redis.get(`user:online:${u.userId}`);
+      return { ...u._doc, isOnline: status === '1' };
+    }));
+
+    res.status(200).json({ users: usersWithStatus });
 
   } catch (error) {
     logger.error(`error in search users: ${error}`);
@@ -146,6 +151,39 @@ export const getBulkStatus = async (req: Request, res: Response, next: NextFunct
 
   } catch (error) {
     logger.error(`error in bulk status: ${error}`);
+    next(error);
+  }
+};
+
+export const getBulkProfiles = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { userIds } = req.body;
+
+    if (!userIds || !Array.isArray(userIds)) {
+      return res.status(400).json({ message: "userIds array is required" });
+    }
+
+    const profiles = await profileModel.find({ userId: { $in: userIds } });
+    
+    // Hydrate with online status from Redis
+    const keys = userIds.map((id: string) => `user:online:${id}`);
+    const statuses = await redis.mget(...keys);
+    
+    const hydratedProfiles = profiles.map((p: any) => {
+      const index = userIds.indexOf(p.userId);
+      return {
+        ...p._doc,
+        isOnline: index !== -1 && statuses[index] === '1'
+      };
+    });
+
+    res.status(200).json({ message: "profiles found", profiles: hydratedProfiles });
+  } catch (error: any) {
+    logger.error(`error in get bulk profiles: ${error}`);
     next(error);
   }
 };
