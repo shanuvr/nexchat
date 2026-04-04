@@ -2,7 +2,7 @@ import { io, Socket } from 'socket.io-client';
 import { getAccessToken } from './tokenStore';
 
 let socket: Socket | null = null;
-const SOCKET_URL = 'http://192.168.1.6:3005'; // Machine IP to allow device connections
+const SOCKET_URL = 'http://10.58.62.137:3005'; // Machine IP to allow device connections
 
 export const connectSocket = async () => {
   if (socket?.connected) return socket;
