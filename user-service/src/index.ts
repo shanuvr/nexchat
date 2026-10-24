@@ -1,11 +1,11 @@
-console.log("hello from user se rvice");
+import 'dotenv/config';
 import app from './app';
 import connectDB from './config/database';
 import profileModel from './models/UserProfile';
 import logger from './utils/logger';
 import { connectRabbitMQ, listenToQueue } from './utils/rabbitmq';
 
-const PORT = process.env.PORT || 3005;
+const PORT = process.env.PORT || 3002;
 async function serverStarter() {
  await connectDB()
  await connectRabbitMQ()

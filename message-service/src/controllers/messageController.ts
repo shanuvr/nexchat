@@ -9,7 +9,7 @@ export const sendMessage = async (
 ) => {
   try {
     const senderId = req.headers["x-user-id"] as string;
-    const { chatId, text } = req.body;
+    const { chatId, text, receiverId } = req.body;
     if (!chatId || !text) {
       return res.status(400).json({ message: "chat id and text are required" });
     }
